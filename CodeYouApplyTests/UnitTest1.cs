@@ -1,3 +1,4 @@
+using CodeYouApplyTests.Selectors;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
@@ -46,12 +47,11 @@ namespace CodeYouApplyTests
         [Test]
         public void HomepageApplyLink_RedirectsToCorrectUri_WhenClicked()
         {
-            var expectedUrl = homepageUrl + applyUrl;
 
-            NavigateTo(homepageUrl);
-            ClickElement(GetElementBySelector());
+            NavigateTo(HomePage.Url);
+            ClickElement(GetElementBySelector(HomePage.Apply));
 
-            Assert.That(expectedUrl, Is.EqualTo(_driver.Url));
+            Assert.That(ApplicationPage.Url, Is.EqualTo(_driver.Url));
         }
 
         [TearDown]
