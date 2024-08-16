@@ -8,8 +8,6 @@ namespace CodeYouApplyTests
     public class Tests
     {
         private IWebDriver _driver;
-        private readonly string homepageUrl = "https://code-you.org";
-        private readonly string applyUrl = "/apply/";
 
         [SetUp]
         public void Setup()
@@ -22,13 +20,12 @@ namespace CodeYouApplyTests
         {
             var expectedAlertText = "The form is not complete and has not " +
                 "been submitted yet. There are 28 problems with your submission.";
-            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(5));
+            var wait = new WebDriverWait(_driver, TimeSpan.FromMilliseconds(500));
 
-            NavigateTo(homepageUrl);
-            var applyLink = _driver.FindElement(By.XPath("//li[@id='menu-item-44']//a[normalize-space()='Apply']"));
-            applyLink.Click();
+            NavigateTo(HomePage.Url);
+            ClickElement(FindElement(HomePage.ApplyLink));
 
-            var submitButton = _driver.FindElement(By.XPath("//input[@id='submit_button']"));
+            var submitButton = FindElement(ApplicationPage.SubmitButton);
 
             // Simply using submitButton.Click() kept giving "click intercepted" errors
             // Clicking via JavaScript works just fine, though
@@ -37,9 +34,7 @@ namespace CodeYouApplyTests
 
             wait.Until((_driver) => AlertDisplayed());
 
-            var alert = _driver.SwitchTo().Alert();
-            var alertText = alert.Text;
-            alert.Dismiss();
+            var alertText = GetAlertTextAndDismiss();
 
             Assert.That(expectedAlertText, Is.EqualTo(alertText));
         }
@@ -49,7 +44,7 @@ namespace CodeYouApplyTests
         {
 
             NavigateTo(HomePage.Url);
-            ClickElement(GetElementBySelector(HomePage.Apply));
+            ClickElement(FindElement(HomePage.ApplyLink));
 
             Assert.That(ApplicationPage.Url, Is.EqualTo(_driver.Url));
         }
@@ -85,9 +80,14 @@ namespace CodeYouApplyTests
             element.Click();
         }
 
-        private IWebElement GetElementBySelector(string selector)
+        private IWebElement FindElement(string selector)
         {
             return _driver.FindElement(By.XPath(selector));
+        }
+
+        private string GetAlertTextAndDismiss()
+        {
+            return _driver.SwitchTo().Alert().Text;
         }
     }
 }
