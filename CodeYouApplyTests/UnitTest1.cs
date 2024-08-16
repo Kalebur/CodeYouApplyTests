@@ -49,7 +49,7 @@ namespace CodeYouApplyTests
             var expectedUrl = homepageUrl + applyUrl;
 
             NavigateTo(homepageUrl);
-            ClickElement(GetApplyLink());
+            ClickElement(GetElementBySelector());
 
             Assert.That(expectedUrl, Is.EqualTo(_driver.Url));
         }
@@ -85,9 +85,9 @@ namespace CodeYouApplyTests
             element.Click();
         }
 
-        private IWebElement GetApplyLink()
+        private IWebElement GetElementBySelector(string selector)
         {
-            return _driver.FindElement(By.XPath("//li[@id='menu-item-44']//a[normalize-space()='Apply']"));
+            return _driver.FindElement(By.XPath(selector));
         }
     }
 }
