@@ -18,8 +18,6 @@ namespace CodeYouApplyTests
         [Test]
         public void FormSubmission_DisplaysErrorWithSpecificText_WhenBlankFormSubmitted()
         {
-            var expectedAlertText = "The form is not complete and has not " +
-                "been submitted yet. There are 28 problems with your submission.";
             var wait = new WebDriverWait(_driver, TimeSpan.FromMilliseconds(500));
 
             NavigateTo(HomePage.Url);
@@ -36,7 +34,7 @@ namespace CodeYouApplyTests
 
             var alertText = GetAlertTextAndDismiss();
 
-            Assert.That(expectedAlertText, Is.EqualTo(alertText));
+            Assert.That(ApplicationPage.BlankSubmissionErrorText, Is.EqualTo(alertText));
         }
 
         [Test]
@@ -52,7 +50,16 @@ namespace CodeYouApplyTests
         [Test]
         public void FormStateDropdown_DisplaysOnlyCoveredStates_WhenSelected()
         {
+            NavigateTo(ApplicationPage.Url);
+            var stateOptionsAsStrings = GetSelectOptionsAsStrings(
+                new SelectElement(FindElement(ApplicationPage.StateDropdown)));
 
+            // The first option should just be the placeholder 'Please select' type text
+            // and shouldn't be checked
+            stateOptionsAsStrings.RemoveAt(0);
+
+
+            CollectionAssert.AreEquivalent(ApplicationPage.ValidStateOptions, stateOptionsAsStrings);
         }
 
         [TearDown]
@@ -99,6 +106,18 @@ namespace CodeYouApplyTests
         private IList<IWebElement> GetSelectOptions(SelectElement selectElement)
         {
             return selectElement.Options;
+        }
+
+        private IList<string> GetSelectOptionsAsStrings(SelectElement selectElement)
+        {
+            List<string> optionsAsStrings = [];
+
+            foreach (var option in selectElement.Options)
+            {
+                optionsAsStrings.Add(option.Text);
+            }
+
+            return optionsAsStrings;
         }
     }
 }
