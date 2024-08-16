@@ -78,5 +78,10 @@ namespace CodeYouApplyTests
         {
             _driver.Navigate().GoToUrl(homepageUri);
         }
+
+        private void ClickElement(IWebElement element)
+        {
+            element.Click();
+        }
     }
 }
