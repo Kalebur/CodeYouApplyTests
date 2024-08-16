@@ -49,6 +49,12 @@ namespace CodeYouApplyTests
             Assert.That(ApplicationPage.Url, Is.EqualTo(_driver.Url));
         }
 
+        [Test]
+        public void FormStateDropdown_DisplaysOnlyCoveredStates_WhenSelected()
+        {
+
+        }
+
         [TearDown]
         public void TearDown()
         {
@@ -88,6 +94,11 @@ namespace CodeYouApplyTests
         private string GetAlertTextAndDismiss()
         {
             return _driver.SwitchTo().Alert().Text;
+        }
+
+        private IList<IWebElement> GetSelectOptions(SelectElement selectElement)
+        {
+            return selectElement.Options;
         }
     }
 }
