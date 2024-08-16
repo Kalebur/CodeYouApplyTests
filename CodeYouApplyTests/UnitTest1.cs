@@ -7,8 +7,8 @@ namespace CodeYouApplyTests
     public class Tests
     {
         private IWebDriver _driver;
-        private readonly string homepageUri = "https://code-you.org";
-        private readonly string applyUriPath = "/apply/";
+        private readonly string homepageUrl = "https://code-you.org";
+        private readonly string applyUrl = "/apply/";
 
         [SetUp]
         public void Setup()
@@ -23,7 +23,7 @@ namespace CodeYouApplyTests
                 "been submitted yet. There are 28 problems with your submission.";
             var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(5));
 
-            NavigateToHomePage();
+            NavigateTo(homepageUrl);
             var applyLink = _driver.FindElement(By.XPath("//li[@id='menu-item-44']//a[normalize-space()='Apply']"));
             applyLink.Click();
 
@@ -46,11 +46,12 @@ namespace CodeYouApplyTests
         [Test]
         public void HomepageApplyLink_RedirectsToCorrectUri_WhenClicked()
         {
-            var expectedUri = homepageUri + applyUriPath;
+            var expectedUrl = homepageUrl + applyUrl;
 
-            NavigateToHomePage();
+            NavigateTo(homepageUrl);
+            ClickElement(GetApplyLink());
 
-            Assert.That(expectedUri, Is.EqualTo(_driver.Url));
+            Assert.That(expectedUrl, Is.EqualTo(_driver.Url));
         }
 
         [TearDown]
@@ -66,7 +67,7 @@ namespace CodeYouApplyTests
             {
                 _driver.SwitchTo().Alert();
             }
-            catch (NoAlertPresentException e)
+            catch
             {
                 return false;
             }
@@ -74,14 +75,19 @@ namespace CodeYouApplyTests
             return true;
         }
 
-        private void NavigateToHomePage()
+        private void NavigateTo(string url)
         {
-            _driver.Navigate().GoToUrl(homepageUri);
+            _driver.Navigate().GoToUrl(url);
         }
 
-        private void ClickElement(IWebElement element)
+        private static void ClickElement(IWebElement element)
         {
             element.Click();
+        }
+
+        private IWebElement GetApplyLink()
+        {
+            return _driver.FindElement(By.XPath("//li[@id='menu-item-44']//a[normalize-space()='Apply']"));
         }
     }
 }
