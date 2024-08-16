@@ -8,17 +8,18 @@ namespace CodeYouApplyTests
     public class Tests
     {
         private IWebDriver _driver;
+        private WebDriverWait _wait;
 
         [SetUp]
         public void Setup()
         {
             _driver = new ChromeDriver();
+             _wait = new WebDriverWait(_driver, TimeSpan.FromMilliseconds(500));
         }
 
         [Test]
         public void FormSubmission_DisplaysErrorWithSpecificText_WhenBlankFormSubmitted()
         {
-            var wait = new WebDriverWait(_driver, TimeSpan.FromMilliseconds(500));
 
             NavigateTo(HomePage.Url);
             ClickElement(FindElement(HomePage.ApplyLink));
@@ -30,7 +31,7 @@ namespace CodeYouApplyTests
             IJavaScriptExecutor javaScriptExecutor = (IJavaScriptExecutor)_driver;
             javaScriptExecutor.ExecuteScript("arguments[0].click();", submitButton);
 
-            wait.Until((_driver) => AlertDisplayed());
+            _wait.Until((_driver) => AlertDisplayed());
 
             var alertText = GetAlertTextAndDismiss();
 
@@ -60,6 +61,26 @@ namespace CodeYouApplyTests
 
 
             CollectionAssert.AreEquivalent(ApplicationPage.ValidStateOptions, stateOptionsAsStrings);
+        }
+
+        [Test]
+        public void ApplicationForm_ContainsCorrectIntroText()
+        {
+            NavigateTo(ApplicationPage.Url);
+            var introText = FindElement(ApplicationPage.FormIntroText).Text;
+            var expectedText = ApplicationPage.ExpectedFormIntroText;
+
+            Assert.That(expectedText, Is.EqualTo(introText));
+        }
+
+        [Test]
+        public void FormSubmission_FailsAndDisplaysInvalidDateError_WhenBirthDateIsInInvalidFormat()
+        {
+            NavigateTo(ApplicationPage.Url);
+            var formFields = FindElement(ApplicationPage.Form).GetChildren();
+            var cheese = formFields[0].GetAttribute("id");
+
+            Assert.That(cheese, Is.EqualTo("Nom Nom"));
         }
 
         [TearDown]
