@@ -158,13 +158,20 @@ namespace CodeYouApplyTests
             SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count() - 2);
 
             ClickViaJavaScript(raceCheckBoxes[raceCheckBoxes.Count - 1]);
+            int selectedCount = GetSelectedItemsCount(raceCheckBoxes);
+
+            Assert.That(selectedCount, Is.EqualTo(1));
+        }
+
+        private static int GetSelectedItemsCount(IList<IWebElement> raceCheckBoxes)
+        {
             var selectedCount = 0;
             foreach (var checkbox in raceCheckBoxes)
             {
                 if (checkbox.Selected) selectedCount++;
             }
 
-            Assert.That(selectedCount, Is.EqualTo(1));
+            return selectedCount;
         }
 
         [TearDown]
