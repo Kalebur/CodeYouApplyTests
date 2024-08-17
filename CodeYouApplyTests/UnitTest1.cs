@@ -1,7 +1,9 @@
 using CodeYouApplyTests.Selectors;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.Events;
 using OpenQA.Selenium.Support.UI;
+using System.ComponentModel.DataAnnotations;
 
 namespace CodeYouApplyTests
 {
@@ -25,17 +27,27 @@ namespace CodeYouApplyTests
             ClickElement(FindElement(HomePage.ApplyLink));
 
             var submitButton = FindElement(ApplicationPage.SubmitButton);
+            ClickViaJavaScript(submitButton);
 
+            _wait.Until((_driver) => AlertDisplayed());
+
+            var alertText = GetAlertText();
+
+            Assert.That(ApplicationPage.BlankSubmissionErrorText, Is.EqualTo(alertText));
+        }
+
+        private void ClickViaJavaScript(IWebElement submitButton)
+        {
             // Simply using submitButton.Click() kept giving "click intercepted" errors
             // Clicking via JavaScript works just fine, though
             IJavaScriptExecutor javaScriptExecutor = (IJavaScriptExecutor)_driver;
             javaScriptExecutor.ExecuteScript("arguments[0].click();", submitButton);
+        }
 
-            _wait.Until((_driver) => AlertDisplayed());
-
-            var alertText = GetAlertTextAndDismiss();
-
-            Assert.That(ApplicationPage.BlankSubmissionErrorText, Is.EqualTo(alertText));
+        private void ClickViaJavaScript(string xPath)
+        {
+            var element = FindElement(xPath);
+            ClickViaJavaScript(element);
         }
 
         [Test]
@@ -76,12 +88,34 @@ namespace CodeYouApplyTests
         [Test]
         public void FormSubmission_FailsAndDisplaysInvalidDateError_WhenBirthDateIsInInvalidFormat()
         {
-            NavigateTo(ApplicationPage.Url);
-            var formFields = FindElement(ApplicationPage.Form).GetChildrenOfType("div");
-            var cheese = formFields[0].GetAttribute("id");
-            var fieldParent = formFields[1].GetParent();
+            IWebElement? birthdayField = null;
 
-            Assert.That(formFields.Count.ToString(), Is.EqualTo(fieldParent.GetAttribute("id")));
+            NavigateTo(ApplicationPage.Url);
+            var submitButton = FindElement(ApplicationPage.SubmitButton);
+            var birthdateInput = FindElement("//input[@id='tfa_5']");
+            birthdateInput.SendKeys("88-88");
+            ClickViaJavaScript(submitButton);
+            DismissAlert();
+
+            var formFields = FindElement(ApplicationPage.Form).GetChildrenOfType("div");
+            
+            foreach (var field in formFields)
+            {
+                var fieldChildren = field.GetChildren();
+                foreach (var child in fieldChildren)
+                {
+                    if (child.Text.ToLower().Contains("birth"))
+                    {
+                        birthdayField = child;
+                    }
+                }
+            }
+
+            var birthdayFieldId = ParseIdToBase(birthdayField.GetAttribute("id"));
+            var errorSpan = birthdayField.FindElement(By.XPath("//div[@id='tfa_5-E']"));
+
+
+            Assert.That(errorSpan.Text, Is.EqualTo(ApplicationPage.InvalidDateErrorText));
         }
 
         [TearDown]
@@ -115,14 +149,25 @@ namespace CodeYouApplyTests
             element.Click();
         }
 
+        private void ClickElement(string xPath)
+        {
+            var element = _driver.FindElement(By.XPath(xPath));
+            ClickElement(element);
+        }
+
         private IWebElement FindElement(string selector)
         {
             return _driver.FindElement(By.XPath(selector));
         }
 
-        private string GetAlertTextAndDismiss()
+        private string GetAlertText()
         {
             return _driver.SwitchTo().Alert().Text;
+        }
+
+        private void DismissAlert()
+        {
+            _driver.SwitchTo().Alert().Dismiss();
         }
 
         private IList<IWebElement> GetSelectOptions(SelectElement selectElement)
@@ -140,6 +185,11 @@ namespace CodeYouApplyTests
             }
 
             return optionsAsStrings;
+        }
+
+        private string ParseIdToBase(string id)
+        {
+            return id[0..id.IndexOf('-')];
         }
     }
 }
