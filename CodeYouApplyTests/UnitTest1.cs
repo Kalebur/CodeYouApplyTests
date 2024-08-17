@@ -77,10 +77,11 @@ namespace CodeYouApplyTests
         public void FormSubmission_FailsAndDisplaysInvalidDateError_WhenBirthDateIsInInvalidFormat()
         {
             NavigateTo(ApplicationPage.Url);
-            var formFields = FindElement(ApplicationPage.Form).GetChildren();
+            var formFields = FindElement(ApplicationPage.Form).GetChildrenOfType("div");
             var cheese = formFields[0].GetAttribute("id");
+            var fieldParent = formFields[1].GetParent();
 
-            Assert.That(cheese, Is.EqualTo("Nom Nom"));
+            Assert.That(formFields.Count.ToString(), Is.EqualTo(fieldParent.GetAttribute("id")));
         }
 
         [TearDown]

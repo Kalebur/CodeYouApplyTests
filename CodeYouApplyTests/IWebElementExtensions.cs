@@ -13,5 +13,10 @@ namespace CodeYouApplyTests
         {
             return element.FindElement(By.XPath(".."));
         }
+
+        public static IList<IWebElement> GetChildrenOfType(this IWebElement element, string type)
+        {
+            return element.FindElements(By.XPath($"./child::{type}"));
+        }
     }
 }
