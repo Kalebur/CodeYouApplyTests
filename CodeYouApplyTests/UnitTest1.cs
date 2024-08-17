@@ -37,12 +37,12 @@ namespace CodeYouApplyTests
             Assert.That(ApplicationPage.BlankSubmissionErrorText, Is.EqualTo(alertText));
         }
 
-        private void ClickViaJavaScript(IWebElement submitButton)
+        private void ClickViaJavaScript(IWebElement element)
         {
             // Simply using submitButton.Click() kept giving "click intercepted" errors
             // Clicking via JavaScript works just fine, though
             IJavaScriptExecutor javaScriptExecutor = (IJavaScriptExecutor)_driver;
-            javaScriptExecutor.ExecuteScript("arguments[0].click();", submitButton);
+            javaScriptExecutor.ExecuteScript("arguments[0].click();", element);
         }
 
         private void ClickViaJavaScript(string xPath)
@@ -106,7 +106,7 @@ namespace CodeYouApplyTests
         [Test]
         public void FormSubmission_FailsAndDisplaysDateRangeError_WhenBirthDateIsFutureOrAgeUnderEighteen()
         {
-            var birthDateInputText = GetRandomBirthDate().ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+            var birthDateInputText = GetRandomDate().ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
             NavigateTo(ApplicationPage.Url);
 
             var submitButton = FindElement(ApplicationPage.SubmitButton);
@@ -118,6 +118,31 @@ namespace CodeYouApplyTests
 
             var errorText = FindElement(ApplicationFormFields.BirthDateErrorMessage);
             Assert.That(errorText.Text, Is.EqualTo(ApplicationFormFields.GetExpectedBirthDateRangeErrorMsg()));
+        }
+
+        [Test]
+        public void ComputerSkillsRadioButtonGroup_OnlyAllowsOneSelectionAtATime()
+        {
+            NavigateTo(ApplicationPage.Url);
+            var radioButtons = FindElement(
+                ApplicationFormFields.ComputerSkillsRadioButtonGroup).GetChildrenOfType("span//input");
+
+            SelectRandomElementInCollection(radioButtons);
+            SelectRandomElementInCollection(radioButtons);
+            SelectRandomElementInCollection(radioButtons);
+            SelectRandomElementInCollection(radioButtons);
+            SelectRandomElementInCollection(radioButtons);
+
+            int selectedCount = 0;
+            foreach (var radioButton in radioButtons)
+            {
+                if (radioButton.Selected)
+                {
+                    selectedCount++;
+                }
+            }
+
+            Assert.That(selectedCount, Is.AtMost(1));
         }
 
         [TearDown]
@@ -189,7 +214,7 @@ namespace CodeYouApplyTests
             return optionsAsStrings;
         }
 
-        private DateTime GetRandomBirthDate()
+        private DateTime GetRandomDate()
         {
             int month = _random.Next(1, 12);
             int day;
@@ -212,6 +237,13 @@ namespace CodeYouApplyTests
             var year = DateTime.Today.AddYears(_random.Next(-100, 100));
 
             return new DateTime(year.Year, month, day);
+        }
+
+        private void SelectRandomElementInCollection(IList<IWebElement> elements)
+        {
+            var randomIndex = _random.Next(0, elements.Count);
+
+            ClickViaJavaScript(elements[randomIndex]);
         }
     }
 }

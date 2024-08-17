@@ -13,6 +13,8 @@ namespace CodeYouApplyTests.Selectors
         public static string BirthDateInput { get; set; } = "//input[@id='tfa_5']";
         public static string BirthDateErrorMessage { get; set; } = "//div[@id='tfa_5-E']//span";
 
+        public static string ComputerSkillsRadioButtonGroup { get; set; } = "//span[@id='tfa_1110']";
+
         public static string GetExpectedBirthDateRangeErrorMsg()
         {
             var youngestBirthDate = DateTime.Today.AddYears(-_minAge);
