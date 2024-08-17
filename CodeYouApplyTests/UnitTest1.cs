@@ -2,6 +2,7 @@ using CodeYouApplyTests.Selectors;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
+using System.Globalization;
 
 namespace CodeYouApplyTests
 {
@@ -9,12 +10,14 @@ namespace CodeYouApplyTests
     {
         private IWebDriver _driver;
         private WebDriverWait _wait;
+        private Random _random;
 
         [SetUp]
         public void Setup()
         {
             _driver = new ChromeDriver();
              _wait = new WebDriverWait(_driver, TimeSpan.FromMilliseconds(500));
+            _random = new Random();
         }
 
         [Test]
@@ -100,6 +103,22 @@ namespace CodeYouApplyTests
             Assert.That(errorText, Is.EqualTo(ApplicationPage.InvalidDateErrorText));
         }
 
+        [Test]
+        public void FormSubmission_FailsAndDisplaysDateRangeError_WhenBirthDateIsFutureOrAgeUnderEighteen()
+        {
+            var birthDateInputText = GetRandomBirthDate().ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+            NavigateTo(ApplicationPage.Url);
+
+            var submitButton = FindElement(ApplicationPage.SubmitButton);
+            var birthdateInput = FindElement(ApplicationFormFields.BirthDateInput);
+
+            ClickViaJavaScript(submitButton);
+            DismissAlert();
+
+            var errorText = FindElement(ApplicationFormFields.BirthDateErrorMessage);
+            Assert.That(ApplicationFormFields.GetExpectedBirthDateRangeErrorMsg(), Is.EqualTo(birthDateInputText));
+        }
+
         [TearDown]
         public void TearDown()
         {
@@ -167,6 +186,31 @@ namespace CodeYouApplyTests
             }
 
             return optionsAsStrings;
+        }
+
+        private DateTime GetRandomBirthDate()
+        {
+            int month = _random.Next(1, 12);
+            int day;
+
+            if (month == 2)
+            {
+                day = _random.Next(1, 28);
+            }
+            else if (month == 4 ||
+                month == 6 ||
+                month == 9 ||
+                month == 11)
+            {
+                day = _random.Next(1, 30);
+            } else
+            {
+                day = _random.Next(1, 31);
+            }
+
+            var year = DateTime.Today.AddYears(_random.Next(-100, 100));
+
+            return new DateTime(year.Year, month, day);
         }
     }
 }
