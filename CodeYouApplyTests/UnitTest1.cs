@@ -145,6 +145,28 @@ namespace CodeYouApplyTests
             Assert.That(selectedCount, Is.AtMost(1));
         }
 
+        [Test]
+        public void RaceCheckboxGroup_ClearsAllOtherSelections_WhenSelectingPreferNotToSay()
+        {
+            NavigateTo(ApplicationPage.Url);
+
+            var raceCheckBoxes = FindElement(
+                ApplicationFormFields.RaceCheckboxGroup).GetChildrenOfType("span//input");
+
+            SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count() - 2);
+            SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count() - 2);
+            SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count() - 2);
+
+            ClickViaJavaScript(raceCheckBoxes[raceCheckBoxes.Count - 1]);
+            var selectedCount = 0;
+            foreach (var checkbox in raceCheckBoxes)
+            {
+                if (checkbox.Selected) selectedCount++;
+            }
+
+            Assert.That(selectedCount, Is.EqualTo(1));
+        }
+
         [TearDown]
         public void TearDown()
         {
@@ -239,9 +261,13 @@ namespace CodeYouApplyTests
             return new DateTime(year.Year, month, day);
         }
 
-        private void SelectRandomElementInCollection(IList<IWebElement> elements)
+        private void SelectRandomElementInCollection(IList<IWebElement> elements, int? maxUpperBound = null)
         {
-            var randomIndex = _random.Next(0, elements.Count);
+            if (maxUpperBound is null)
+            {
+                maxUpperBound = elements.Count;
+            }
+            var randomIndex = _random.Next(0, (int)maxUpperBound);
 
             ClickViaJavaScript(elements[randomIndex]);
         }
