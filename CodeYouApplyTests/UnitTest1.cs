@@ -1,9 +1,7 @@
 using CodeYouApplyTests.Selectors;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.Events;
 using OpenQA.Selenium.Support.UI;
-using System.ComponentModel.DataAnnotations;
 
 namespace CodeYouApplyTests
 {
@@ -88,34 +86,18 @@ namespace CodeYouApplyTests
         [Test]
         public void FormSubmission_FailsAndDisplaysInvalidDateError_WhenBirthDateIsInInvalidFormat()
         {
-            IWebElement? birthdayField = null;
-
             NavigateTo(ApplicationPage.Url);
+
             var submitButton = FindElement(ApplicationPage.SubmitButton);
-            var birthdateInput = FindElement("//input[@id='tfa_5']");
+            var birthdateInput = FindElement(ApplicationFormFields.BirthDateInput);
             birthdateInput.SendKeys("88-88");
+
             ClickViaJavaScript(submitButton);
             DismissAlert();
 
-            var formFields = FindElement(ApplicationPage.Form).GetChildrenOfType("div");
-            
-            foreach (var field in formFields)
-            {
-                var fieldChildren = field.GetChildren();
-                foreach (var child in fieldChildren)
-                {
-                    if (child.Text.ToLower().Contains("birth"))
-                    {
-                        birthdayField = child;
-                    }
-                }
-            }
+            var errorText = FindElement(ApplicationFormFields.BirthDateErrorMessage).Text;
 
-            var birthdayFieldId = ParseIdToBase(birthdayField.GetAttribute("id"));
-            var errorSpan = birthdayField.FindElement(By.XPath("//div[@id='tfa_5-E']"));
-
-
-            Assert.That(errorSpan.Text, Is.EqualTo(ApplicationPage.InvalidDateErrorText));
+            Assert.That(errorText, Is.EqualTo(ApplicationPage.InvalidDateErrorText));
         }
 
         [TearDown]
@@ -170,12 +152,12 @@ namespace CodeYouApplyTests
             _driver.SwitchTo().Alert().Dismiss();
         }
 
-        private IList<IWebElement> GetSelectOptions(SelectElement selectElement)
+        private static IList<IWebElement> GetSelectOptions(SelectElement selectElement)
         {
             return selectElement.Options;
         }
 
-        private IList<string> GetSelectOptionsAsStrings(SelectElement selectElement)
+        private List<string> GetSelectOptionsAsStrings(SelectElement selectElement)
         {
             List<string> optionsAsStrings = [];
 
@@ -185,11 +167,6 @@ namespace CodeYouApplyTests
             }
 
             return optionsAsStrings;
-        }
-
-        private string ParseIdToBase(string id)
-        {
-            return id[0..id.IndexOf('-')];
         }
     }
 }
