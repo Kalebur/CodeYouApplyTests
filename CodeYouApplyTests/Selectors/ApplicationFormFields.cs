@@ -26,7 +26,7 @@ namespace CodeYouApplyTests.Selectors
 
         private static string GetFormattedDateTime(DateTime date)
         {
-            return date.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+            return date.ToString("M/d/yyyy", CultureInfo.InvariantCulture);
         }
     }
 }

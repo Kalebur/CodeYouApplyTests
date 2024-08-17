@@ -111,12 +111,13 @@ namespace CodeYouApplyTests
 
             var submitButton = FindElement(ApplicationPage.SubmitButton);
             var birthdateInput = FindElement(ApplicationFormFields.BirthDateInput);
+            birthdateInput.SendKeys(birthDateInputText);
 
             ClickViaJavaScript(submitButton);
             DismissAlert();
 
             var errorText = FindElement(ApplicationFormFields.BirthDateErrorMessage);
-            Assert.That(ApplicationFormFields.GetExpectedBirthDateRangeErrorMsg(), Is.EqualTo(birthDateInputText));
+            Assert.That(errorText.Text, Is.EqualTo(ApplicationFormFields.GetExpectedBirthDateRangeErrorMsg()));
         }
 
         [TearDown]
