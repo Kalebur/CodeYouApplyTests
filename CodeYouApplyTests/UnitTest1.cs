@@ -1,6 +1,7 @@
 using CodeYouApplyTests.Selectors;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.DevTools.V125.Page;
 using OpenQA.Selenium.Support.UI;
 using System.Globalization;
 
@@ -133,14 +134,7 @@ namespace CodeYouApplyTests
             SelectRandomElementInCollection(radioButtons);
             SelectRandomElementInCollection(radioButtons);
 
-            int selectedCount = 0;
-            foreach (var radioButton in radioButtons)
-            {
-                if (radioButton.Selected)
-                {
-                    selectedCount++;
-                }
-            }
+            int selectedCount = GetSelectedItemsCount(radioButtons);
 
             Assert.That(selectedCount, Is.AtMost(1));
         }
@@ -153,9 +147,9 @@ namespace CodeYouApplyTests
             var raceCheckBoxes = FindElement(
                 ApplicationFormFields.RaceCheckboxGroup).GetChildrenOfType("span//input");
 
-            SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count() - 2);
-            SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count() - 2);
-            SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count() - 2);
+            SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
+            SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
+            SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
 
             ClickViaJavaScript(raceCheckBoxes[raceCheckBoxes.Count - 1]);
             int selectedCount = GetSelectedItemsCount(raceCheckBoxes);
@@ -172,6 +166,16 @@ namespace CodeYouApplyTests
             }
 
             return selectedCount;
+        }
+
+        [Test]
+        public void GovernmentServicesCheckboxGroup_DoesNotExistWhenPageInitiallyLoaded()
+        {
+            NavigateTo(ApplicationPage.Url);
+
+            var governmentServicesCheckboxGroup = _driver.FindElements(By.XPath(ApplicationFormFields.GovernmentServicesCheckboxGroup));
+
+            Assert.That(governmentServicesCheckboxGroup, Has.Count.EqualTo(0));
         }
 
         [TearDown]
@@ -270,10 +274,7 @@ namespace CodeYouApplyTests
 
         private void SelectRandomElementInCollection(IList<IWebElement> elements, int? maxUpperBound = null)
         {
-            if (maxUpperBound is null)
-            {
-                maxUpperBound = elements.Count;
-            }
+            maxUpperBound ??= elements.Count;
             var randomIndex = _random.Next(0, (int)maxUpperBound);
 
             ClickViaJavaScript(elements[randomIndex]);
