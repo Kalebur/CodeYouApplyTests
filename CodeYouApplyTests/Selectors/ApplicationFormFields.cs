@@ -25,6 +25,11 @@ namespace CodeYouApplyTests.Selectors
                 "Clark, IN", "Crawford", "Dearborn", "Floyd, IN", "Harrison, IN",
                 "Scott, IN", "Washington", "Other",
             }},
+            {"OH", new List<string>
+            {
+                "Butler", "Clermont", "Hamilton", "Warren", "Other",
+            }},
+
         };
 
         public static string GetExpectedBirthDateRangeErrorMsg()

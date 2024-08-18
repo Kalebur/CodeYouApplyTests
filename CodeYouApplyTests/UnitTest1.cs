@@ -104,6 +104,8 @@ namespace CodeYouApplyTests
             Assert.That(errorText, Is.EqualTo(ApplicationPage.InvalidDateErrorText));
         }
 
+        //TODO: Fix the birthdays provided to this function. The current random dates can
+        // sometimes provide a valid date, and this is specifically testing for invalid ones
         [Test]
         public void FormSubmission_FailsAndDisplaysDateRangeError_WhenBirthDateIsFutureOrAgeUnderEighteen()
         {
@@ -179,6 +181,7 @@ namespace CodeYouApplyTests
         }
 
         [TestCase("IN")]
+        [TestCase("OH")]
         public void CountyDropdown_DisplaysOnlyValidCounties_ForSelectedState(string state)
         {
             NavigateTo(ApplicationPage.Url);
