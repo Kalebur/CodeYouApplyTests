@@ -178,11 +178,23 @@ namespace CodeYouApplyTests
             Assert.That(governmentServicesCheckboxGroup, Has.Count.EqualTo(0));
         }
 
-        [Test]
-        public void CountyDropdown_DisplaysOnlyValidCounties_ForSelectedState()
+        [TestCase("IN")]
+        public void CountyDropdown_DisplaysOnlyValidCounties_ForSelectedState(string state)
         {
             NavigateTo(ApplicationPage.Url);
-            var stateChoices = FindElement(ApplicationFormFields.StateDropdownList);
+            var stateDropdown = new SelectElement(FindElement(ApplicationFormFields.StateDropdownList));
+            stateDropdown.SelectByText(state);
+
+            var countyDropdown = new SelectElement(FindElement(ApplicationFormFields.CountyDropdownList));
+            var displayedCounties = countyDropdown.Options.Where(
+                option => ApplicationFormFields.ValidCountiesIN.Contains(option.Text))
+                .ToList();
+
+            var distinctCounties = displayedCounties.DistinctBy(option => option.Text);
+
+            var countyText = distinctCounties.Select(option => option.Text).ToList();
+
+            Assert.That(distinctCounties.Count, Is.EqualTo(ApplicationFormFields.ValidCountiesIN.Count));
         }
 
         [TearDown]
