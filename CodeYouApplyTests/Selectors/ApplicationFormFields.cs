@@ -19,10 +19,13 @@ namespace CodeYouApplyTests.Selectors
         public static string StateDropdownList { get; set; } = "//select[@id='tfa_220']";
         public static string CountyDropdownList { get; set; } = "//select[@id='tfa_59']";
 
-        public static List<string> ValidCountiesIN { get; set; } = [
-            "Clark, IN", "Crawford", "Dearborn", "Floyd, IN", "Harrison, IN",
-            "Scott, IN", "Washington", "Other",
-        ];
+        public static Dictionary<string, List<string>> ValidCountiesInState { get; set; } = new Dictionary<string, List<string>>
+        {
+            {"IN", new List<string> {
+                "Clark, IN", "Crawford", "Dearborn", "Floyd, IN", "Harrison, IN",
+                "Scott, IN", "Washington", "Other",
+            }},
+        };
 
         public static string GetExpectedBirthDateRangeErrorMsg()
         {

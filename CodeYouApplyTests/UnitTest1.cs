@@ -187,14 +187,14 @@ namespace CodeYouApplyTests
 
             var countyDropdown = new SelectElement(FindElement(ApplicationFormFields.CountyDropdownList));
             var displayedCounties = countyDropdown.Options.Where(
-                option => ApplicationFormFields.ValidCountiesIN.Contains(option.Text))
+                option => ApplicationFormFields.ValidCountiesInState[state].Contains(option.Text))
                 .ToList();
 
             var distinctCounties = displayedCounties.DistinctBy(option => option.Text);
 
             var countyText = distinctCounties.Select(option => option.Text).ToList();
 
-            Assert.That(distinctCounties.Count, Is.EqualTo(ApplicationFormFields.ValidCountiesIN.Count));
+            Assert.That(distinctCounties.Count, Is.EqualTo(ApplicationFormFields.ValidCountiesInState[state].Count));
         }
 
         [TearDown]
