@@ -16,6 +16,8 @@ namespace CodeYouApplyTests.Selectors
         public static string ComputerSkillsRadioButtonGroup { get; set; } = "//span[@id='tfa_1110']";
         public static string RaceCheckboxGroup { get; set; } = "//span[@id='tfa_794']";
         public static string GovernmentServicesCheckboxGroup { get; set; } = "//*[@id=\"tfa_510\"]";
+        public static string StateDropdownList { get; set; } = "//select[@id='tfa_220']";
+        public static string CountyDropdownList { get; set; } = "//select[@id='tfa_59']";
 
         public static string GetExpectedBirthDateRangeErrorMsg()
         {

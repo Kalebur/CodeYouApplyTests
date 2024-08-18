@@ -178,6 +178,13 @@ namespace CodeYouApplyTests
             Assert.That(governmentServicesCheckboxGroup, Has.Count.EqualTo(0));
         }
 
+        [Test]
+        public void CountyDropdown_DisplaysOnlyValidCounties_ForSelectedState()
+        {
+            NavigateTo(ApplicationPage.Url);
+            var stateChoices = FindElement(ApplicationFormFields.StateDropdownList);
+        }
+
         [TearDown]
         public void TearDown()
         {
@@ -277,10 +284,10 @@ namespace CodeYouApplyTests
             return new DateTime(year.Year, month, day);
         }
 
-        private void SelectRandomElementInCollection(IList<IWebElement> elements, int? maxUpperBound = null)
+        private void SelectRandomElementInCollection(IList<IWebElement> elements, int? maxIndex = null, int minIndex = 0)
         {
-            maxUpperBound ??= elements.Count;
-            var randomIndex = _random.Next(0, (int)maxUpperBound);
+            maxIndex ??= elements.Count;
+            var randomIndex = _random.Next(minIndex, (int)maxIndex);
 
             ClickViaJavaScript(elements[randomIndex]);
         }
