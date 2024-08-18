@@ -220,6 +220,11 @@ namespace CodeYouApplyTests
             return _driver.FindElement(By.XPath(selector));
         }
 
+        private List<IWebElement> FindElements(string selector)
+        {
+            return [.. _driver.FindElements(By.XPath(selector))];
+        }
+
         private string GetAlertText()
         {
             return _driver.SwitchTo().Alert().Text;
