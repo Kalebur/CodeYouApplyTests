@@ -1,7 +1,6 @@
 using CodeYouApplyTests.Selectors;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.DevTools.V125.Page;
 using OpenQA.Selenium.Support.UI;
 using System.Globalization;
 
@@ -182,6 +181,7 @@ namespace CodeYouApplyTests
 
         [TestCase("IN")]
         [TestCase("OH")]
+        [TestCase("KY")]
         public void CountyDropdown_DisplaysOnlyValidCounties_ForSelectedState(string state)
         {
             NavigateTo(ApplicationPage.Url);
@@ -207,6 +207,7 @@ namespace CodeYouApplyTests
             _driver.Dispose();
         }
 
+        #region Private Helper Methods
         private bool AlertDisplayed()
         {
             try
@@ -306,5 +307,6 @@ namespace CodeYouApplyTests
 
             ClickViaJavaScript(elements[randomIndex]);
         }
+        #endregion
     }
 }

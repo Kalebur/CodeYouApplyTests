@@ -29,7 +29,20 @@ namespace CodeYouApplyTests.Selectors
             {
                 "Butler", "Clermont", "Hamilton", "Warren", "Other",
             }},
-
+            {"KY", new List<string>
+            {
+                "Adair", "Anderson","Bath", "Bell", "Boone", "Bourbon","Boyd", "Boyle",
+                "Breathitt", "Bullitt", "Campbell", "Carroll", "Carter", "Casey", "Clark", "Clay",
+                "Clinton", "Cumberland", "Edmonson", "Elliott", "Estill", "Fayette", "Fleming",
+                "Floyd", "Franklin", "Gallatin", "Garrard", "Grant", "Green", "Greenup",
+                "Harlan", "Harrison", "Hart", "Henry", "Jackson", "Jefferson", "Jessamine", "Johnson",
+                "Kenton", "Knott", "Knox", "Laurel", "Lawrence", "Lee", "Leslie", "Letcher", "Lewis",
+                "Lincoln", "Madison", "Magoffin", "Martin", "McCreary", "Menifee", "Mercer",
+                "Metcalfe", "Monroe", "Montgomery", "Morgan", "Nicholas", "Oldham", "Owen", "Owsley",
+                "Pendleton", "Perry", "Pike", "Powell", "Pulaski", "Robertson", "Rockcastle",
+                "Rowan", "Russell", "Scott", "Shelby", "Spencer", "Trimble", "Wayne", "Whitley",
+                "Wolfe", "Woodford", "Other"
+            } }
         };
 
         public static string GetExpectedBirthDateRangeErrorMsg()
