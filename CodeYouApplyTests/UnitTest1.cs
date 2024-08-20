@@ -48,22 +48,6 @@ namespace CodeYouApplyTests
 			Assert.That(ApplicationPage.BlankSubmissionErrorText, Is.EqualTo(alertText));
 		}
 
-		// You want to make sure you have all of your helper methods grouped together
-		// This allows your test class to be clean with all of the test methods grouped together
-		private void ClickViaJavaScript(IWebElement element)
-		{
-			// Simply using submitButton.Click() kept giving "click intercepted" errors
-			// Clicking via JavaScript works just fine, though
-			IJavaScriptExecutor javaScriptExecutor = (IJavaScriptExecutor)_driver;
-			javaScriptExecutor.ExecuteScript("arguments[0].click();", element);
-		}
-
-		private void ClickViaJavaScript(string xPath)
-		{
-			var element = FindElement(xPath);
-			ClickViaJavaScript(element);
-		}
-
 		[Test]
 		public void HomepageApplyLink_RedirectsToCorrectUri_WhenClicked()
 		{
@@ -124,7 +108,7 @@ namespace CodeYouApplyTests
 		[Test]
 		public void FormSubmission_FailsAndDisplaysDateRangeError_WhenBirthDateIsFutureOrAgeUnderEighteen()
 		{
-			var birthDateInputText = GetRandomDate().ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+			var birthDateInputText = GetRandomBirthdate("future").ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
 			NavigateTo(ApplicationPage.Url);
 
 			var submitButton = FindElement(ApplicationPage.SubmitButton);
@@ -302,23 +286,23 @@ namespace CodeYouApplyTests
 
 		private DateTime GetRandomDate()
 		{
-			int month = _random.Next(1, 12);
+			int month = _random.Next(1, 13);
 			int day;
 
 			if (month == 2)
 			{
-				day = _random.Next(1, 28);
+				day = _random.Next(1, 29);
 			}
 			else if (month == 4 ||
 					month == 6 ||
 					month == 9 ||
 					month == 11)
 			{
-				day = _random.Next(1, 30);
+				day = _random.Next(1, 31);
 			}
 			else
 			{
-				day = _random.Next(1, 31);
+				day = _random.Next(1, 32);
 			}
 
 			var year = DateTime.Today.AddYears(_random.Next(-100, 100));
@@ -362,7 +346,23 @@ namespace CodeYouApplyTests
 			return new DateTime(year, month, day);
 		}
 
-		private void SelectRandomElementInCollection(IList<IWebElement> elements, int? maxIndex = null, int minIndex = 0)
+        // You want to make sure you have all of your helper methods grouped together
+        // This allows your test class to be clean with all of the test methods grouped together
+        private void ClickViaJavaScript(IWebElement element)
+        {
+            // Simply using submitButton.Click() kept giving "click intercepted" errors
+            // Clicking via JavaScript works just fine, though
+            IJavaScriptExecutor javaScriptExecutor = (IJavaScriptExecutor)_driver;
+            javaScriptExecutor.ExecuteScript("arguments[0].click();", element);
+        }
+
+        private void ClickViaJavaScript(string xPath)
+        {
+            var element = FindElement(xPath);
+            ClickViaJavaScript(element);
+        }
+
+        private void SelectRandomElementInCollection(IList<IWebElement> elements, int? maxIndex = null, int minIndex = 0)
 		{
 			maxIndex ??= elements.Count;
 			var randomIndex = _random.Next(minIndex, (int)maxIndex);
