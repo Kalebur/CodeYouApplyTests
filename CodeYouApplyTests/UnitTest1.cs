@@ -37,7 +37,7 @@ namespace CodeYouApplyTests
 			ClickElement(FindElement(HomePage.ApplyLink));
 
 			// With the submitButton locator changed you can just use 
-			ClickViaJavaScript(_applicationPage.submitButton);
+			_applicationPage.submitButton.ClickViaJavaScript();
 			//var submitButton = FindElement(ApplicationPage.SubmitButton);
 			//ClickViaJavaScript(submitButton);
 
@@ -92,7 +92,7 @@ namespace CodeYouApplyTests
 			var birthdateInput = FindElement(ApplicationFormFields.BirthDateInput);
 			birthdateInput.SendKeys("88-88");
 
-			ClickViaJavaScript(submitButton);
+			submitButton.ClickViaJavaScript();
 			DismissAlert();
 
 			var errorText = FindElement(ApplicationFormFields.BirthDateErrorMessage).Text;
@@ -114,8 +114,9 @@ namespace CodeYouApplyTests
 			var submitButton = FindElement(ApplicationPage.SubmitButton);
 			var birthdateInput = FindElement(ApplicationFormFields.BirthDateInput);
 			birthdateInput.SendKeys(birthDateInputText);
+			submitButton.ClickViaJavaScript();
 
-			ClickViaJavaScript(submitButton);
+			//ClickViaJavaScript(submitButton);
 			DismissAlert();
 
 			var errorText = FindElement(ApplicationFormFields.BirthDateErrorMessage);
@@ -154,7 +155,7 @@ namespace CodeYouApplyTests
 			SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
 			SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
 			// This also selects a checkbox
-			ClickViaJavaScript(raceCheckBoxes[raceCheckBoxes.Count - 1]);
+			raceCheckBoxes[raceCheckBoxes.Count - 1].ClickViaJavaScript();
 			// This count could be 1 to 3
 			int selectedCount = GetSelectedItemsCount(raceCheckBoxes);
 
@@ -346,28 +347,12 @@ namespace CodeYouApplyTests
 			return new DateTime(year, month, day);
 		}
 
-        // You want to make sure you have all of your helper methods grouped together
-        // This allows your test class to be clean with all of the test methods grouped together
-        private void ClickViaJavaScript(IWebElement element)
-        {
-            // Simply using submitButton.Click() kept giving "click intercepted" errors
-            // Clicking via JavaScript works just fine, though
-            IJavaScriptExecutor javaScriptExecutor = (IJavaScriptExecutor)_driver;
-            javaScriptExecutor.ExecuteScript("arguments[0].click();", element);
-        }
-
-        private void ClickViaJavaScript(string xPath)
-        {
-            var element = FindElement(xPath);
-            ClickViaJavaScript(element);
-        }
-
         private void SelectRandomElementInCollection(IList<IWebElement> elements, int? maxIndex = null, int minIndex = 0)
 		{
 			maxIndex ??= elements.Count;
 			var randomIndex = _random.Next(minIndex, (int)maxIndex);
 
-			ClickViaJavaScript(elements[randomIndex]);
+			elements[randomIndex].ClickViaJavaScript();
 		}
 
 		#endregion Private Helper Methods
