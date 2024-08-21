@@ -15,10 +15,8 @@ namespace CodeYouApplyTests.Selectors
 
 		public static IWebElement SubmitButton => _driver.FindElement(By.XPath("//input[@id='submit_button']"));
 
-		public static IWebElement StateDropdown => _driver.FindElement(By.XPath("(//select[@id='tfa_220'])[1]"));
 		public static IWebElement FormIntroText => _driver.FindElement(By.XPath("//span[contains(text()," +
 				"'Please use this form to sign-up for Code:You. Appl')]"));
-		public static IWebElement Form => _driver.FindElement(By.XPath("//div[@id='tfa_515']"));
 
         public static string GetExpectedErrorAlertText(int expectedErrorCount) => $"The form is not complete and has not " +
 						$"been submitted yet. There are {expectedErrorCount} problems with your submission.";

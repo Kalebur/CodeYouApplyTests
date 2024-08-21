@@ -56,7 +56,7 @@ namespace CodeYouApplyTests
         {
             _driver.Navigate().GoToUrl(ApplicationPage.Url);
             var stateOptionsAsStrings = _testHelpers.GetSelectOptionsAsStrings(
-                    new SelectElement(ApplicationPage.StateDropdown));
+                    new SelectElement(_applicationFormFields.StateDropdownList));
 
             // The first option should just be the placeholder 'Please select' type text
             // and shouldn't be checked, so we'll remove it from the possibilities
