@@ -33,11 +33,11 @@ namespace CodeYouApplyTests
 			_driver.Navigate().GoToUrl(_homePage.Url);
 			_homePage.ApplyLink.Click();
 
-			_applicationPage.submitButton.ClickViaJavaScript();
+			ApplicationPage.SubmitButton.ClickViaJavaScript();
 			_wait.Until((_driver) => AlertDisplayed());
 			var alertText = GetAlertText();
 
-			Assert.That(_applicationPage.GetExpectedErrorAlertText(28), Is.EqualTo(alertText));
+			Assert.That(ApplicationPage.GetExpectedErrorAlertText(28), Is.EqualTo(alertText));
 		}
 
 		[Test]
@@ -54,7 +54,7 @@ namespace CodeYouApplyTests
 		{
 			NavigateTo(ApplicationPage.Url);
 			var stateOptionsAsStrings = GetSelectOptionsAsStrings(
-					new SelectElement(_applicationPage.StateDropdown));
+					new SelectElement(ApplicationPage.StateDropdown));
 
 			// The first option should just be the placeholder 'Please select' type text
 			// and shouldn't be checked, so we'll remove it from the possibilities
@@ -67,7 +67,7 @@ namespace CodeYouApplyTests
 		public void ApplicationForm_ContainsCorrectIntroText()
 		{
 			NavigateTo(ApplicationPage.Url);
-			var introText = FindElement(ApplicationPage.FormIntroText).Text;
+			var introText = ApplicationPage.FormIntroText.Text;
 			var expectedText = ApplicationPage.ExpectedFormIntroText;
 
 			Assert.That(expectedText, Is.EqualTo(introText));
@@ -78,11 +78,10 @@ namespace CodeYouApplyTests
 		{
 			NavigateTo(ApplicationPage.Url);
 
-			var submitButton = FindElement(ApplicationPage.SubmitButton);
 			var birthdateInput = FindElement(ApplicationFormFields.BirthDateInput);
 			birthdateInput.SendKeys("88-88");
 
-			submitButton.ClickViaJavaScript();
+			ApplicationPage.SubmitButton.ClickViaJavaScript();
 			DismissAlert();
 
 			var errorText = FindElement(ApplicationFormFields.BirthDateErrorMessage).Text;
@@ -97,10 +96,9 @@ namespace CodeYouApplyTests
 			var birthDateInputText = GetRandomBirthdate(rangeType).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
 			NavigateTo(ApplicationPage.Url);
 
-			var submitButton = FindElement(ApplicationPage.SubmitButton);
 			var birthdateInput = FindElement(ApplicationFormFields.BirthDateInput);
 			birthdateInput.SendKeys(birthDateInputText);
-			submitButton.ClickViaJavaScript();
+			ApplicationPage.SubmitButton.ClickViaJavaScript();
 
 			DismissAlert();
 

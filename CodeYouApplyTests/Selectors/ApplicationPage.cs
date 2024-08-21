@@ -11,19 +11,16 @@ namespace CodeYouApplyTests.Selectors
 			_driver = driver;
 		}
 
-		// This should be named something more specific than Url...maybe something like applyPageUrl
 		public static string Url { get; set; } = "https://code-you.org/apply/";
 
-		// Locators are usually written like this
-		public IWebElement submitButton => _driver.FindElement(By.XPath("//input[@id='submit_button']"));
-		// then you do not have to invoke a find element method in your test class
-		public static string SubmitButton { get; set; } = "//input[@id='submit_button']";
+		public static IWebElement SubmitButton => _driver.FindElement(By.XPath("//input[@id='submit_button']"));
 
-		public IWebElement StateDropdown => _driver.FindElement(By.XPath("(//select[@id='tfa_220'])[1]"));
-		public static string FormIntroText { get; set; } = "//span[contains(text()," +
-				"'Please use this form to sign-up for Code:You. Appl')]";
+		public static IWebElement StateDropdown => _driver.FindElement(By.XPath("(//select[@id='tfa_220'])[1]"));
+		public static IWebElement FormIntroText => _driver.FindElement(By.XPath("//span[contains(text()," +
+				"'Please use this form to sign-up for Code:You. Appl')]"));
+		public static IWebElement Form => _driver.FindElement(By.XPath("//div[@id='tfa_515']"));
 
-        public string GetExpectedErrorAlertText(int expectedErrorCount) => $"The form is not complete and has not " +
+        public static string GetExpectedErrorAlertText(int expectedErrorCount) => $"The form is not complete and has not " +
 						$"been submitted yet. There are {expectedErrorCount} problems with your submission.";
 
 
@@ -32,6 +29,5 @@ namespace CodeYouApplyTests.Selectors
 		public static List<string> ValidStateOptions { get; set; } = ["IN", "KY", "OH"];
 		public static string InvalidDateErrorText { get; set; } = "This does not appear to be a valid date.";
 
-		public static string Form { get; set; } = "//div[@id='tfa_515']";
 	}
 }
