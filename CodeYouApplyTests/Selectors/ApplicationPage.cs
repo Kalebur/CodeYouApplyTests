@@ -1,6 +1,6 @@
 using OpenQA.Selenium;
 
-namespace CodeYouApplyTests.Selectors
+namespace ApplicationPageTests.Selectors
 {
 	public class ApplicationPage
 	{

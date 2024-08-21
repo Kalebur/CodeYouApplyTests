@@ -1,7 +1,7 @@
 using OpenQA.Selenium;
 using System.Reflection;
 
-namespace CodeYouApplyTests
+namespace ApplicationPageTests
 {
     public static class IWebElementExtensions
     {

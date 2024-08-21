@@ -1,7 +1,7 @@
 using OpenQA.Selenium;
 using System.Globalization;
 
-namespace CodeYouApplyTests.Selectors
+namespace ApplicationPageTests.Selectors
 {
 	public class ApplicationFormFields(IWebDriver driver)
     {

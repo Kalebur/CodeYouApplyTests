@@ -1,7 +1,7 @@
 ﻿using OpenQA.Selenium;
 using System.Runtime.CompilerServices;
 
-namespace CodeYouApplyTests
+namespace ApplicationPageTests
 {
     public static class IWebDriverExtensions
     {

@@ -1,4 +1,4 @@
-﻿namespace CodeYouApplyTests
+﻿namespace ApplicationPageTests
 {
     public enum BirthdateRange
     {

@@ -1,11 +1,10 @@
-using CodeYouApplyTests.Selectors;
+using ApplicationPageTests.Selectors;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System.Globalization;
 
-// Name this something more specific...like ApplicationPageTests
-namespace CodeYouApplyTests
+namespace ApplicationPageTests
 {
     public class Tests
     {

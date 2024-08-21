@@ -2,12 +2,18 @@
 using OpenQA.Selenium.Support.UI;
 using System;
 
-namespace CodeYouApplyTests
+namespace ApplicationPageTests
 {
     public class TestHelpers
     {
         private readonly Random _random = new();
 
+        /// <summary>
+        /// Select's a random element from a given collection of elements.
+        /// </summary>
+        /// <param name="elements">A collection of elements to select an item in.</param>
+        /// <param name="maxIndex">The exclusive upperbound index for possible choices. If no value is provided, collection's Count property will be used. </param>
+        /// <param name="minIndex">The minimum index a choice can be selected from.</param>
         public void SelectRandomElementInCollection(IList<IWebElement> elements, int? maxIndex = null, int minIndex = 0)
         {
             maxIndex ??= elements.Count;
