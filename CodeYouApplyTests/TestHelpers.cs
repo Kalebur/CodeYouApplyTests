@@ -17,13 +17,7 @@ namespace CodeYouApplyTests
 
         public int GetSelectedItemsCount(IList<IWebElement> elements)
         {
-            var selectedCount = 0;
-            foreach (var element in elements)
-            {
-                if (element.Selected) selectedCount++;
-            }
-
-            return selectedCount;
+            return elements.Where(element => element.Selected).Count();
         }
 
         public DateTime GetRandomBirthdate(BirthdateRange rangeType)
