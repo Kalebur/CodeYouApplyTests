@@ -13,6 +13,7 @@ namespace CodeYouApplyTests
 		private IWebDriver _driver;
 		private WebDriverWait _wait;
 		private ApplicationPage _applicationPage;
+		private ApplicationFormFields _applicationFormFields;
 		private HomePage _homePage;
 		private TestHelpers _testHelpers;
 
@@ -23,6 +24,7 @@ namespace CodeYouApplyTests
 			_wait = new WebDriverWait(_driver, TimeSpan.FromMilliseconds(500));
 			_driver.Manage().Window.Maximize();
 			_applicationPage = new ApplicationPage(_driver);
+			_applicationFormFields = new ApplicationFormFields(_driver);
 			_homePage = new HomePage(_driver);
 			_testHelpers = new TestHelpers();
 		}
@@ -52,7 +54,7 @@ namespace CodeYouApplyTests
 		[Test]
 		public void FormStateDropdown_DisplaysOnlyCoveredStates_WhenSelected()
 		{
-			NavigateTo(ApplicationPage.Url);
+			_driver.Navigate().GoToUrl(ApplicationPage.Url);
 			var stateOptionsAsStrings = GetSelectOptionsAsStrings(
 					new SelectElement(ApplicationPage.StateDropdown));
 
@@ -66,7 +68,7 @@ namespace CodeYouApplyTests
 		[Test]
 		public void ApplicationForm_ContainsCorrectIntroText()
 		{
-			NavigateTo(ApplicationPage.Url);
+			_driver.Navigate().GoToUrl(ApplicationPage.Url);
 			var introText = ApplicationPage.FormIntroText.Text;
 			var expectedText = ApplicationPage.ExpectedFormIntroText;
 
@@ -76,14 +78,13 @@ namespace CodeYouApplyTests
 		[Test]
 		public void FormSubmission_FailsAndDisplaysInvalidDateError_WhenBirthDateIsInInvalidFormat()
 		{
-			NavigateTo(ApplicationPage.Url);
+			_driver.Navigate().GoToUrl(ApplicationPage.Url);
 
-			var birthdateInput = FindElement(ApplicationFormFields.BirthDateInput);
-			birthdateInput.SendKeys("88-88");
+			_applicationFormFields.BirthDateInput.SendKeys("88-88");
 
 			ApplicationPage.SubmitButton.ClickViaJavaScript();
 			DismissAlert();
-			var errorText = FindElement(ApplicationFormFields.BirthDateErrorMessage).Text;
+			var errorText = _applicationFormFields.BirthDateErrorMessage.Text;
 
 
 			Assert.That(errorText, Is.EqualTo(ApplicationPage.InvalidDateErrorText));
@@ -95,22 +96,21 @@ namespace CodeYouApplyTests
 		{
 			var birthDateInputText = _testHelpers.GetRandomBirthdate(rangeType)
 				.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
-			NavigateTo(ApplicationPage.Url);
+			_driver.Navigate().GoToUrl(ApplicationPage.Url);
 
-			var birthdateInput = FindElement(ApplicationFormFields.BirthDateInput);
-			birthdateInput.SendKeys(birthDateInputText);
+			_applicationFormFields.BirthDateInput.SendKeys(birthDateInputText);
 			ApplicationPage.SubmitButton.ClickViaJavaScript();
 
 			DismissAlert();
 
-			var errorText = FindElement(ApplicationFormFields.BirthDateErrorMessage);
+			var errorText = _applicationFormFields.BirthDateErrorMessage;
 			Assert.That(errorText.Text, Is.EqualTo(ApplicationFormFields.GetExpectedBirthDateRangeErrorMsg()));
 		}
 
 		[Test]
 		public void ComputerSkillsRadioButtonGroup_OnlyAllowsOneSelectionAtATime()
 		{
-			NavigateTo(ApplicationPage.Url);
+			_driver.Navigate().GoToUrl(ApplicationPage.Url);
 			var radioButtons = FindElement(
 					ApplicationFormFields.ComputerSkillsRadioButtonGroup).GetChildrenOfType("span//input");
 
@@ -128,7 +128,7 @@ namespace CodeYouApplyTests
 		[Test]
 		public void RaceCheckboxGroup_ClearsAllOtherSelections_WhenSelectingPreferNotToSay()
 		{
-			NavigateTo(ApplicationPage.Url);
+			_driver.Navigate().GoToUrl(ApplicationPage.Url);
 
 			var raceCheckBoxes = FindElement(
 					ApplicationFormFields.RaceCheckboxGroup).GetChildrenOfType("span//input");
@@ -152,7 +152,7 @@ namespace CodeYouApplyTests
 		[Test]
 		public void GovernmentServicesCheckboxGroup_DoesNotExistWhenPageInitiallyLoaded()
 		{
-			NavigateTo(ApplicationPage.Url);
+			_driver.Navigate().GoToUrl(ApplicationPage.Url);
 
 			var governmentServicesCheckboxGroup = _driver.FindElements(By.XPath(ApplicationFormFields.GovernmentServicesCheckboxGroup));
 
@@ -164,7 +164,7 @@ namespace CodeYouApplyTests
 		[TestCase("KY")]
 		public void CountyDropdown_DisplaysOnlyValidCounties_ForSelectedState(string state)
 		{
-			NavigateTo(ApplicationPage.Url);
+			_driver.Navigate().GoToUrl(ApplicationPage.Url);
 			var stateDropdown = new SelectElement(FindElement(ApplicationFormFields.StateDropdownList));
 			stateDropdown.SelectByText(state);
 
@@ -207,21 +207,6 @@ namespace CodeYouApplyTests
 		// Assumingly you would use these helpers in all of your test classes
 
 		// Although I would argue that some of these methods are not needed at all. You have written them to only except XPath and there are multiple ways to find an element other than XPath. 
-		private void NavigateTo(string url)
-		{
-			_driver.Navigate().GoToUrl(url);
-		}
-
-		private static void ClickElement(IWebElement element)
-		{
-			element.Click();
-		}
-
-		private void ClickElement(string xPath)
-		{
-			var element = _driver.FindElement(By.XPath(xPath));
-			ClickElement(element);
-		}
 
 		private IWebElement FindElement(string selector)
 		{

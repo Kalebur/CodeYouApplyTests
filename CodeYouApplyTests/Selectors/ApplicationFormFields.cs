@@ -1,17 +1,23 @@
+using OpenQA.Selenium;
 using System.Globalization;
 
 namespace CodeYouApplyTests.Selectors
 {
-	public static class ApplicationFormFields
+	public class ApplicationFormFields
 	{
+		private readonly IWebDriver _driver;
+		public ApplicationFormFields(IWebDriver driver) {
+			_driver = driver;
+		}
+
 		private static readonly int _maxAge = 99;
 		private static readonly int _minAge = 18;
 
 		public static string EmailInput { get; set; } = "//input[@id='tfa_215']";
 		public static string EmailErrorMessage { get; set; } = "//div[@id='tfa_215-E']//span";
 
-		public static string BirthDateInput { get; set; } = "//input[@id='tfa_5']";
-		public static string BirthDateErrorMessage { get; set; } = "//div[@id='tfa_5-E']//span";
+		public IWebElement BirthDateInput => _driver.FindElement(By.XPath("//input[@id='tfa_5']"));
+		public IWebElement BirthDateErrorMessage => _driver.FindElement(By.XPath("//div[@id='tfa_5-E']//span"));
 
 		public static string ComputerSkillsRadioButtonGroup { get; set; } = "//span[@id='tfa_1110']";
 		public static string RaceCheckboxGroup { get; set; } = "//span[@id='tfa_794']";
