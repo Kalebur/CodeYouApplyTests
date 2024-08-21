@@ -3,27 +3,22 @@ using System.Globalization;
 
 namespace CodeYouApplyTests.Selectors
 {
-	public class ApplicationFormFields
-	{
-		private readonly IWebDriver _driver;
-		public ApplicationFormFields(IWebDriver driver) {
-			_driver = driver;
-		}
-
-		private static readonly int _maxAge = 99;
+	public class ApplicationFormFields(IWebDriver driver)
+    {
+        private static readonly int _maxAge = 99;
 		private static readonly int _minAge = 18;
 
-		public static string EmailInput { get; set; } = "//input[@id='tfa_215']";
-		public static string EmailErrorMessage { get; set; } = "//div[@id='tfa_215-E']//span";
+		public IWebElement EmailInput => driver.FindElement(By.XPath("//input[@id='tfa_215']"));
+		public IWebElement EmailErrorMessage => driver.FindElement(By.XPath("//div[@id='tfa_215-E']//span"));
 
-		public IWebElement BirthDateInput => _driver.FindElement(By.XPath("//input[@id='tfa_5']"));
-		public IWebElement BirthDateErrorMessage => _driver.FindElement(By.XPath("//div[@id='tfa_5-E']//span"));
+		public IWebElement BirthDateInput => driver.FindElement(By.XPath("//input[@id='tfa_5']"));
+		public IWebElement BirthDateErrorMessage => driver.FindElement(By.XPath("//div[@id='tfa_5-E']//span"));
 
-		public static string ComputerSkillsRadioButtonGroup { get; set; } = "//span[@id='tfa_1110']";
-		public static string RaceCheckboxGroup { get; set; } = "//span[@id='tfa_794']";
-		public static string GovernmentServicesCheckboxGroup { get; set; } = "//*[@id=\"tfa_510\"]";
-		public static string StateDropdownList { get; set; } = "//select[@id='tfa_220']";
-		public static string CountyDropdownList { get; set; } = "//select[@id='tfa_59']";
+		public IWebElement ComputerSkillsRadioButtonGroup => driver.FindElement(By.XPath("//span[@id='tfa_1110']"));
+		public	IWebElement RaceCheckboxGroup => driver.FindElement(By.XPath("//span[@id='tfa_794']"));
+		public IWebElement GovernmentServicesCheckboxGroup => driver.FindElement(By.XPath("//*[@id=\"tfa_510\"]"));
+		public IWebElement StateDropdownList => driver.FindElement(By.XPath("//select[@id='tfa_220']"));
+		public IWebElement CountyDropdownList => driver.FindElement(By.XPath("//select[@id='tfa_59']"));
 
 		public static Dictionary<string, List<string>> ValidCountiesInState { get; set; } = new Dictionary<string, List<string>>
 				{
