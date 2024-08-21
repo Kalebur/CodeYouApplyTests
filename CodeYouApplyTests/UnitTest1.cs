@@ -32,14 +32,11 @@ namespace CodeYouApplyTests
 		[Test]
 		public void FormSubmission_DisplaysErrorWithSpecificText_WhenBlankFormSubmitted()
 		{
-			// Why not just _driver.Navigate().GoToUrl(HomePage.Url);
 			NavigateTo(HomePage.Url);
 			ClickElement(FindElement(HomePage.ApplyLink));
 
 			// With the submitButton locator changed you can just use 
 			_applicationPage.submitButton.ClickViaJavaScript();
-			//var submitButton = FindElement(ApplicationPage.SubmitButton);
-			//ClickViaJavaScript(submitButton);
 
 			_wait.Until((_driver) => AlertDisplayed());
 
@@ -101,9 +98,9 @@ namespace CodeYouApplyTests
 		}
 
 		// I would break this into TestCases that test both under 18 and birthdates in the future using the [TestCase] attribute
-		[TestCase("future")]
-		[TestCase("under18")]
-		public void FormSubmission_FailsAndDisplaysDateRangeError_WhenBirthDateIsFutureOrAgeUnderEighteen(string rangeType)
+		[TestCase(BirthdateRange.Future)]
+		[TestCase(BirthdateRange.Under18)]
+		public void FormSubmission_FailsAndDisplaysDateRangeError_WhenBirthDateIsFutureOrAgeUnderEighteen(BirthdateRange rangeType)
 		{
 			var birthDateInputText = GetRandomBirthdate(rangeType).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
 			NavigateTo(ApplicationPage.Url);
@@ -307,35 +304,36 @@ namespace CodeYouApplyTests
 
 			return new DateTime(year.Year, month, day);
 		}
+
 		// Here is an updated birthdate generator that you can choose what kind of birthdate you want
-		private DateTime GetRandomBirthdate(string option)
+		private DateTime GetRandomBirthdate(BirthdateRange rangeType)
 		{
-			int month = _random.Next(1, 13); // Corrected to include December
+			int month = _random.Next(1, 13);
 			int day;
 
 			if (month == 2)
 			{
-				day = _random.Next(1, 29); // Corrected to include the 28th day
+				day = _random.Next(1, 29);
 			}
 			else if (month == 4 || month == 6 || month == 9 || month == 11)
 			{
-				day = _random.Next(1, 31); // Corrected to include the 30th day
+				day = _random.Next(1, 31);
 			}
 			else
 			{
-				day = _random.Next(1, 32); // Corrected to include the 31st day
+				day = _random.Next(1, 32);
 			}
 
 			int year;
-			switch (option.ToLower())
+			switch (rangeType)
 			{
-				case "future":
+				case BirthdateRange.Future:
 					year = DateTime.Today.AddYears(_random.Next(1, 100)).Year;
 					break;
-				case "under18":
+				case BirthdateRange.Under18:
 					year = DateTime.Today.AddYears(-_random.Next(0, 18)).Year;
 					break;
-				case "valid":
+				case BirthdateRange.Valid:
 				default:
 					year = DateTime.Today.AddYears(-_random.Next(18, 100)).Year;
 					break;
