@@ -9,10 +9,10 @@ namespace CodeYouApplyTests
 {
 	public class Tests
 	{
+		private readonly int _expectedErrorsForBlankForm = 28;
 		private IWebDriver _driver;
 		private WebDriverWait _wait;
 		private Random _random;
-		// Declare the classes you will need access to up here
 		private ApplicationPage _applicationPage;
 		private HomePage _homePage;
 
@@ -22,36 +22,29 @@ namespace CodeYouApplyTests
 			_driver = new ChromeDriver();
 			_wait = new WebDriverWait(_driver, TimeSpan.FromMilliseconds(500));
 			_random = new Random();
-			// I would add this line of code to maximize the browser window to allow for more visibility when running your tests locally
 			_driver.Manage().Window.Maximize();
-			// I would also go ahead and initialize the classes you will need in your test class here
 			_applicationPage = new ApplicationPage(_driver);
-			_homePage = new HomePage();
+			_homePage = new HomePage(_driver);
 		}
 
 		[Test]
 		public void FormSubmission_DisplaysErrorWithSpecificText_WhenBlankFormSubmitted()
 		{
-			NavigateTo(HomePage.Url);
-			ClickElement(FindElement(HomePage.ApplyLink));
+			_driver.Navigate().GoToUrl(_homePage.Url);
+			_homePage.ApplyLink.Click();
 
-			// With the submitButton locator changed you can just use 
 			_applicationPage.submitButton.ClickViaJavaScript();
-
 			_wait.Until((_driver) => AlertDisplayed());
-
 			var alertText = GetAlertText();
 
-			Assert.That(ApplicationPage.BlankSubmissionErrorText, Is.EqualTo(alertText));
+			Assert.That(_applicationPage.GetExpectedErrorAlertText(28), Is.EqualTo(alertText));
 		}
 
 		[Test]
 		public void HomepageApplyLink_RedirectsToCorrectUri_WhenClicked()
 		{
-			NavigateTo(HomePage.Url);
-			// The click element method might be a little overkill. Using the submitButton example, I would just so something like 
-			// _applicationPage.submitButton.Click();
-			ClickElement(FindElement(HomePage.ApplyLink));
+			_driver.Navigate().GoToUrl(_homePage.Url);
+			_homePage.ApplyLink.Click();
 
 			Assert.That(ApplicationPage.Url, Is.EqualTo(_driver.Url));
 		}
@@ -61,10 +54,10 @@ namespace CodeYouApplyTests
 		{
 			NavigateTo(ApplicationPage.Url);
 			var stateOptionsAsStrings = GetSelectOptionsAsStrings(
-					new SelectElement(FindElement(ApplicationPage.StateDropdown)));
+					new SelectElement(_applicationPage.StateDropdown));
 
 			// The first option should just be the placeholder 'Please select' type text
-			// and shouldn't be checked
+			// and shouldn't be checked, so we'll remove it from the possibilities
 			stateOptionsAsStrings.RemoveAt(0);
 
 			CollectionAssert.AreEquivalent(ApplicationPage.ValidStateOptions, stateOptionsAsStrings);
@@ -97,7 +90,6 @@ namespace CodeYouApplyTests
 			Assert.That(errorText, Is.EqualTo(ApplicationPage.InvalidDateErrorText));
 		}
 
-		// I would break this into TestCases that test both under 18 and birthdates in the future using the [TestCase] attribute
 		[TestCase(BirthdateRange.Future)]
 		[TestCase(BirthdateRange.Under18)]
 		public void FormSubmission_FailsAndDisplaysDateRangeError_WhenBirthDateIsFutureOrAgeUnderEighteen(BirthdateRange rangeType)
@@ -110,7 +102,6 @@ namespace CodeYouApplyTests
 			birthdateInput.SendKeys(birthDateInputText);
 			submitButton.ClickViaJavaScript();
 
-			//ClickViaJavaScript(submitButton);
 			DismissAlert();
 
 			var errorText = FindElement(ApplicationFormFields.BirthDateErrorMessage);
@@ -143,30 +134,21 @@ namespace CodeYouApplyTests
 			var raceCheckBoxes = FindElement(
 					ApplicationFormFields.RaceCheckboxGroup).GetChildrenOfType("span//input");
 
-			// Theoretically this could select and unselect the same checkbox
-			// These select/ click the boxes
+			// Select boxes at random, resulting in 1 or 3 options selected
 			SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
 			SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
 			SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
-			// This also selects a checkbox
+
+			// Select the final checkbox in the field, which should be the "Prefer Not to Say" field
 			raceCheckBoxes[raceCheckBoxes.Count - 1].ClickViaJavaScript();
-			// This count could be 1 to 3
 			int selectedCount = GetSelectedItemsCount(raceCheckBoxes);
 
-			// Why is this set to Is.EqualTo(1)?...this number could be anywhere from 1 to 4 depending on what is selected
+			// It is expected that clicking "Prefer Not to Say" clears all other fields except itself
+			// leaving only 1 field selected
 			Assert.That(selectedCount, Is.EqualTo(1));
 		}
 
-		private static int GetSelectedItemsCount(IList<IWebElement> raceCheckBoxes)
-		{
-			var selectedCount = 0;
-			foreach (var checkbox in raceCheckBoxes)
-			{
-				if (checkbox.Selected) selectedCount++;
-			}
-
-			return selectedCount;
-		}
+		
 
 		[Test]
 		public void GovernmentServicesCheckboxGroup_DoesNotExistWhenPageInitiallyLoaded()
@@ -279,32 +261,6 @@ namespace CodeYouApplyTests
 			return optionsAsStrings;
 		}
 
-		private DateTime GetRandomDate()
-		{
-			int month = _random.Next(1, 13);
-			int day;
-
-			if (month == 2)
-			{
-				day = _random.Next(1, 29);
-			}
-			else if (month == 4 ||
-					month == 6 ||
-					month == 9 ||
-					month == 11)
-			{
-				day = _random.Next(1, 31);
-			}
-			else
-			{
-				day = _random.Next(1, 32);
-			}
-
-			var year = DateTime.Today.AddYears(_random.Next(-100, 100));
-
-			return new DateTime(year.Year, month, day);
-		}
-
 		// Here is an updated birthdate generator that you can choose what kind of birthdate you want
 		private DateTime GetRandomBirthdate(BirthdateRange rangeType)
 		{
@@ -324,22 +280,13 @@ namespace CodeYouApplyTests
 				day = _random.Next(1, 32);
 			}
 
-			int year;
-			switch (rangeType)
-			{
-				case BirthdateRange.Future:
-					year = DateTime.Today.AddYears(_random.Next(1, 100)).Year;
-					break;
-				case BirthdateRange.Under18:
-					year = DateTime.Today.AddYears(-_random.Next(0, 18)).Year;
-					break;
-				case BirthdateRange.Valid:
-				default:
-					year = DateTime.Today.AddYears(-_random.Next(18, 100)).Year;
-					break;
-			}
-
-			return new DateTime(year, month, day);
+            var year = rangeType switch
+            {
+                BirthdateRange.Future => DateTime.Today.AddYears(_random.Next(1, 100)).Year,
+                BirthdateRange.Under18 => DateTime.Today.AddYears(-_random.Next(0, 18)).Year,
+                _ => DateTime.Today.AddYears(-_random.Next(18, 100)).Year,
+            };
+            return new DateTime(year, month, day);
 		}
 
         private void SelectRandomElementInCollection(IList<IWebElement> elements, int? maxIndex = null, int minIndex = 0)
@@ -350,6 +297,17 @@ namespace CodeYouApplyTests
 			elements[randomIndex].ClickViaJavaScript();
 		}
 
-		#endregion Private Helper Methods
-	}
+        private static int GetSelectedItemsCount(IList<IWebElement> raceCheckBoxes)
+        {
+            var selectedCount = 0;
+            foreach (var checkbox in raceCheckBoxes)
+            {
+                if (checkbox.Selected) selectedCount++;
+            }
+
+            return selectedCount;
+        }
+
+        #endregion Private Helper Methods
+    }
 }
