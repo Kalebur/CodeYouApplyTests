@@ -12,19 +12,19 @@ namespace CodeYouApplyTests
 		private readonly int _expectedErrorsForBlankForm = 28;
 		private IWebDriver _driver;
 		private WebDriverWait _wait;
-		private Random _random;
 		private ApplicationPage _applicationPage;
 		private HomePage _homePage;
+		private TestHelpers _testHelpers;
 
 		[SetUp]
 		public void Setup()
 		{
 			_driver = new ChromeDriver();
 			_wait = new WebDriverWait(_driver, TimeSpan.FromMilliseconds(500));
-			_random = new Random();
 			_driver.Manage().Window.Maximize();
 			_applicationPage = new ApplicationPage(_driver);
 			_homePage = new HomePage(_driver);
+			_testHelpers = new TestHelpers();
 		}
 
 		[Test]
@@ -37,7 +37,7 @@ namespace CodeYouApplyTests
 			_wait.Until((_driver) => AlertDisplayed());
 			var alertText = GetAlertText();
 
-			Assert.That(ApplicationPage.GetExpectedErrorAlertText(28), Is.EqualTo(alertText));
+			Assert.That(ApplicationPage.GetExpectedErrorAlertText(_expectedErrorsForBlankForm), Is.EqualTo(alertText));
 		}
 
 		[Test]
@@ -83,8 +83,8 @@ namespace CodeYouApplyTests
 
 			ApplicationPage.SubmitButton.ClickViaJavaScript();
 			DismissAlert();
-
 			var errorText = FindElement(ApplicationFormFields.BirthDateErrorMessage).Text;
+
 
 			Assert.That(errorText, Is.EqualTo(ApplicationPage.InvalidDateErrorText));
 		}
@@ -93,7 +93,8 @@ namespace CodeYouApplyTests
 		[TestCase(BirthdateRange.Under18)]
 		public void FormSubmission_FailsAndDisplaysDateRangeError_WhenBirthDateIsFutureOrAgeUnderEighteen(BirthdateRange rangeType)
 		{
-			var birthDateInputText = GetRandomBirthdate(rangeType).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+			var birthDateInputText = _testHelpers.GetRandomBirthdate(rangeType)
+				.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
 			NavigateTo(ApplicationPage.Url);
 
 			var birthdateInput = FindElement(ApplicationFormFields.BirthDateInput);
@@ -113,13 +114,13 @@ namespace CodeYouApplyTests
 			var radioButtons = FindElement(
 					ApplicationFormFields.ComputerSkillsRadioButtonGroup).GetChildrenOfType("span//input");
 
-			SelectRandomElementInCollection(radioButtons);
-			SelectRandomElementInCollection(radioButtons);
-			SelectRandomElementInCollection(radioButtons);
-			SelectRandomElementInCollection(radioButtons);
-			SelectRandomElementInCollection(radioButtons);
+			_testHelpers.SelectRandomElementInCollection(radioButtons);
+			_testHelpers.SelectRandomElementInCollection(radioButtons);
+			_testHelpers.SelectRandomElementInCollection(radioButtons);
+			_testHelpers.SelectRandomElementInCollection(radioButtons);
+			_testHelpers.SelectRandomElementInCollection(radioButtons);
 
-			int selectedCount = GetSelectedItemsCount(radioButtons);
+			int selectedCount = _testHelpers.GetSelectedItemsCount(radioButtons);
 
 			Assert.That(selectedCount, Is.AtMost(1));
 		}
@@ -133,13 +134,13 @@ namespace CodeYouApplyTests
 					ApplicationFormFields.RaceCheckboxGroup).GetChildrenOfType("span//input");
 
 			// Select boxes at random, resulting in 1 or 3 options selected
-			SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
-			SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
-			SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
+			_testHelpers.SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
+			_testHelpers.SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
+			_testHelpers.SelectRandomElementInCollection(raceCheckBoxes, raceCheckBoxes.Count - 2);
 
 			// Select the final checkbox in the field, which should be the "Prefer Not to Say" field
 			raceCheckBoxes[raceCheckBoxes.Count - 1].ClickViaJavaScript();
-			int selectedCount = GetSelectedItemsCount(raceCheckBoxes);
+			int selectedCount = _testHelpers.GetSelectedItemsCount(raceCheckBoxes);
 
 			// It is expected that clicking "Prefer Not to Say" clears all other fields except itself
 			// leaving only 1 field selected
@@ -258,53 +259,6 @@ namespace CodeYouApplyTests
 
 			return optionsAsStrings;
 		}
-
-		// Here is an updated birthdate generator that you can choose what kind of birthdate you want
-		private DateTime GetRandomBirthdate(BirthdateRange rangeType)
-		{
-			int month = _random.Next(1, 13);
-			int day;
-
-			if (month == 2)
-			{
-				day = _random.Next(1, 29);
-			}
-			else if (month == 4 || month == 6 || month == 9 || month == 11)
-			{
-				day = _random.Next(1, 31);
-			}
-			else
-			{
-				day = _random.Next(1, 32);
-			}
-
-            var year = rangeType switch
-            {
-                BirthdateRange.Future => DateTime.Today.AddYears(_random.Next(1, 100)).Year,
-                BirthdateRange.Under18 => DateTime.Today.AddYears(-_random.Next(0, 18)).Year,
-                _ => DateTime.Today.AddYears(-_random.Next(18, 100)).Year,
-            };
-            return new DateTime(year, month, day);
-		}
-
-        private void SelectRandomElementInCollection(IList<IWebElement> elements, int? maxIndex = null, int minIndex = 0)
-		{
-			maxIndex ??= elements.Count;
-			var randomIndex = _random.Next(minIndex, (int)maxIndex);
-
-			elements[randomIndex].ClickViaJavaScript();
-		}
-
-        private static int GetSelectedItemsCount(IList<IWebElement> raceCheckBoxes)
-        {
-            var selectedCount = 0;
-            foreach (var checkbox in raceCheckBoxes)
-            {
-                if (checkbox.Selected) selectedCount++;
-            }
-
-            return selectedCount;
-        }
 
         #endregion Private Helper Methods
     }
