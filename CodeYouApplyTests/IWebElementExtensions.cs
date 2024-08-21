@@ -35,7 +35,7 @@ namespace CodeYouApplyTests
                 _cachedDriver = elementDriver as IWebDriver;
             }
 
-            IJavaScriptExecutor javaScriptExecutor = (IJavaScriptExecutor)_cachedDriver;
+            IJavaScriptExecutor javaScriptExecutor = (IJavaScriptExecutor)_cachedDriver!;
             javaScriptExecutor.ExecuteScript("arguments[0].click();", element);
         }
     }

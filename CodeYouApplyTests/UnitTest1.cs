@@ -100,15 +100,12 @@ namespace CodeYouApplyTests
 			Assert.That(errorText, Is.EqualTo(ApplicationPage.InvalidDateErrorText));
 		}
 
-		//TODO: Fix the birthdays provided to this function. The current random dates can
-		// sometimes provide a valid date, and this is specifically testing for invalid ones
-
-		// I wrote you a birthdate generator that will handle future, under 18, and valid birthdates
 		// I would break this into TestCases that test both under 18 and birthdates in the future using the [TestCase] attribute
-		[Test]
-		public void FormSubmission_FailsAndDisplaysDateRangeError_WhenBirthDateIsFutureOrAgeUnderEighteen()
+		[TestCase("future")]
+		[TestCase("under18")]
+		public void FormSubmission_FailsAndDisplaysDateRangeError_WhenBirthDateIsFutureOrAgeUnderEighteen(string rangeType)
 		{
-			var birthDateInputText = GetRandomBirthdate("future").ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+			var birthDateInputText = GetRandomBirthdate(rangeType).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
 			NavigateTo(ApplicationPage.Url);
 
 			var submitButton = FindElement(ApplicationPage.SubmitButton);
