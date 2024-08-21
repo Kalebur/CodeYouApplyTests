@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using System;
 
 namespace CodeYouApplyTests
@@ -15,7 +16,7 @@ namespace CodeYouApplyTests
             elements[randomIndex].ClickViaJavaScript();
         }
 
-        public int GetSelectedItemsCount(IList<IWebElement> elements)
+        public static int GetSelectedItemsCount(IList<IWebElement> elements)
         {
             return elements.Where(element => element.Selected).Count();
         }
@@ -45,6 +46,18 @@ namespace CodeYouApplyTests
                 _ => DateTime.Today.AddYears(-_random.Next(18, 100)).Year,
             };
             return new DateTime(year, month, day);
+        }
+
+        public List<string> GetSelectOptionsAsStrings(SelectElement selectElement)
+        {
+            List<string> optionsAsStrings = [];
+
+            foreach (var option in selectElement.Options)
+            {
+                optionsAsStrings.Add(option.Text);
+            }
+
+            return optionsAsStrings;
         }
     }
 }

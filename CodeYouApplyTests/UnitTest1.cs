@@ -36,8 +36,8 @@ namespace CodeYouApplyTests
             _homePage.ApplyLink.Click();
 
             ApplicationPage.SubmitButton.ClickViaJavaScript();
-            _wait.Until((_driver) => AlertDisplayed());
-            var alertText = GetAlertText();
+            _wait.Until((_driver) => _driver.AlertDisplayed());
+            var alertText = _driver.GetAlertText();
 
             Assert.That(ApplicationPage.GetExpectedErrorAlertText(_expectedErrorsForBlankForm), Is.EqualTo(alertText));
         }
@@ -55,7 +55,7 @@ namespace CodeYouApplyTests
         public void FormStateDropdown_DisplaysOnlyCoveredStates_WhenSelected()
         {
             _driver.Navigate().GoToUrl(ApplicationPage.Url);
-            var stateOptionsAsStrings = GetSelectOptionsAsStrings(
+            var stateOptionsAsStrings = _testHelpers.GetSelectOptionsAsStrings(
                     new SelectElement(ApplicationPage.StateDropdown));
 
             // The first option should just be the placeholder 'Please select' type text
@@ -83,7 +83,7 @@ namespace CodeYouApplyTests
             _applicationFormFields.BirthDateInput.SendKeys("88-88");
 
             ApplicationPage.SubmitButton.ClickViaJavaScript();
-            DismissAlert();
+            _driver.DismissAlert();
             var errorText = _applicationFormFields.BirthDateErrorMessage.Text;
 
 
@@ -101,7 +101,7 @@ namespace CodeYouApplyTests
             _applicationFormFields.BirthDateInput.SendKeys(birthDateInputText);
             ApplicationPage.SubmitButton.ClickViaJavaScript();
 
-            DismissAlert();
+            _driver.DismissAlert();
 
             var errorText = _applicationFormFields.BirthDateErrorMessage;
             Assert.That(errorText.Text, Is.EqualTo(ApplicationFormFields.GetExpectedBirthDateRangeErrorMsg()));
@@ -119,7 +119,7 @@ namespace CodeYouApplyTests
             _testHelpers.SelectRandomElementInCollection(radioButtons);
             _testHelpers.SelectRandomElementInCollection(radioButtons);
 
-            int selectedCount = _testHelpers.GetSelectedItemsCount(radioButtons);
+            int selectedCount = TestHelpers.GetSelectedItemsCount(radioButtons);
 
             Assert.That(selectedCount, Is.AtMost(1));
         }
@@ -138,7 +138,7 @@ namespace CodeYouApplyTests
 
             // Select the final checkbox in the field, which should be the "Prefer Not to Say" field
             raceCheckBoxes[raceCheckBoxes.Count - 1].ClickViaJavaScript();
-            int selectedCount = _testHelpers.GetSelectedItemsCount(raceCheckBoxes);
+            int selectedCount = TestHelpers.GetSelectedItemsCount(raceCheckBoxes);
 
             // It is expected that clicking "Prefer Not to Say" clears all other fields except itself
             // leaving only 1 field selected
@@ -182,65 +182,5 @@ namespace CodeYouApplyTests
             _driver.Quit();
             _driver.Dispose();
         }
-
-        #region Private Helper Methods
-
-        private bool AlertDisplayed()
-        {
-            try
-            {
-                _driver.SwitchTo().Alert();
-            }
-            catch
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        // If you are going to write helper methods for the driver, they should go in their own helper class instead of in the test class
-        // Assumingly you would use these helpers in all of your test classes
-
-        // Although I would argue that some of these methods are not needed at all. You have written them to only except XPath and there are multiple ways to find an element other than XPath. 
-
-        private IWebElement FindElement(string selector)
-        {
-            return _driver.FindElement(By.XPath(selector));
-        }
-
-        private List<IWebElement> FindElements(string selector)
-        {
-            return [.. _driver.FindElements(By.XPath(selector))];
-        }
-
-        private string GetAlertText()
-        {
-            return _driver.SwitchTo().Alert().Text;
-        }
-
-        private void DismissAlert()
-        {
-            _driver.SwitchTo().Alert().Dismiss();
-        }
-
-        private static IList<IWebElement> GetSelectOptions(SelectElement selectElement)
-        {
-            return selectElement.Options;
-        }
-
-        private List<string> GetSelectOptionsAsStrings(SelectElement selectElement)
-        {
-            List<string> optionsAsStrings = [];
-
-            foreach (var option in selectElement.Options)
-            {
-                optionsAsStrings.Add(option.Text);
-            }
-
-            return optionsAsStrings;
-        }
-
-        #endregion Private Helper Methods
     }
 }
