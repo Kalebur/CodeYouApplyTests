@@ -10,10 +10,8 @@ namespace ApplicationPageTests.Selectors
 
 		public IWebElement EmailInput => driver.FindElement(By.XPath("//input[@id='tfa_215']"));
 		public IWebElement EmailErrorMessage => driver.FindElement(By.XPath("//div[@id='tfa_215-E']//span"));
-
 		public IWebElement BirthDateInput => driver.FindElement(By.XPath("//input[@id='tfa_5']"));
 		public IWebElement BirthDateErrorMessage => driver.FindElement(By.XPath("//div[@id='tfa_5-E']//span"));
-
 		public IWebElement ComputerSkillsRadioButtonGroup => driver.FindElement(By.XPath("//span[@id='tfa_1110']"));
 		public	IWebElement RaceCheckboxGroup => driver.FindElement(By.XPath("//span[@id='tfa_794']"));
 		public IWebElement GovernmentServicesCheckboxGroup => driver.FindElement(By.XPath("//*[@id=\"tfa_510\"]"));

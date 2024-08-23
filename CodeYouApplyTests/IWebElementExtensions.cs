@@ -17,7 +17,6 @@ namespace ApplicationPageTests
             return element.FindElement(By.XPath(".."));
         }
 
-        // There is an XPath method that gets the children of elements. We will go over this in class next week
         public static IList<IWebElement> GetChildrenOfType(this IWebElement element, string type)
         {
             return element.FindElements(By.XPath($"./child::{type}"));

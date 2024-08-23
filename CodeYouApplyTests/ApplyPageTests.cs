@@ -6,7 +6,7 @@ using System.Globalization;
 
 namespace ApplicationPageTests
 {
-    public class Tests
+    public class ApplyPageTests
     {
         private readonly int _expectedErrorsForBlankForm = 28;
         private IWebDriver _driver;
@@ -79,6 +79,8 @@ namespace ApplicationPageTests
         {
             _driver.Navigate().GoToUrl(ApplicationPage.Url);
 
+            if (_applicationFormFields.BirthDateInput is null) throw new NullReferenceException("The birth date field doesn't exist on the page.");
+            _wait.Until((_driver) => _applicationFormFields.BirthDateInput.Displayed);
             _applicationFormFields.BirthDateInput.SendKeys("88-88");
 
             ApplicationPage.SubmitButton.ClickViaJavaScript();
@@ -95,8 +97,9 @@ namespace ApplicationPageTests
         {
             var birthDateInputText = _testHelpers.GetRandomBirthdate(rangeType)
                 .ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+            
             _driver.Navigate().GoToUrl(ApplicationPage.Url);
-
+            if (_applicationFormFields.BirthDateInput is null) throw new NullReferenceException("The birth date field doesn't exist on the page.");
             _applicationFormFields.BirthDateInput.SendKeys(birthDateInputText);
             ApplicationPage.SubmitButton.ClickViaJavaScript();
 
@@ -178,8 +181,8 @@ namespace ApplicationPageTests
         [TearDown]
         public void TearDown()
         {
+            Thread.Sleep(1000);
             _driver.Quit();
-            _driver.Dispose();
         }
     }
 }
